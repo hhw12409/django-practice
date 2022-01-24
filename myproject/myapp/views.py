@@ -7,13 +7,13 @@ topics = [
     {'id':3, 'title':'model', 'body':'Model is ..'},
 ]
 
-def index(request):
+def HTMLTemplate():
     # topics 전역변수 선언
     global topics
     li = ''
     for topic in topics:
         li += f'<li><a href="/read/{topic["id"]}">{topic["title"]}</a></li>'
-    return HttpResponse(f'''
+    return f'''
     <html>
     <body>
         <h1>Django</h1>
@@ -24,7 +24,10 @@ def index(request):
         Hello, Django
     </body>
     </html>
-    ''')
+    '''
+
+def index(request):
+    return HttpResponse(HTMLTemplate())
 
 def create(request):
     return HttpResponse('Create')

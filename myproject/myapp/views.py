@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render,HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 topics = [
     {'id':1, 'title':'routing', 'body':'Routing is ..'},
@@ -21,6 +22,11 @@ def HTMLTemplate(articleTag):
             {li}
         </ol>
         {articleTag}
+        <ul>
+            <li>
+                <a href="/create/">create</a>
+            </li>
+        </ul>
     </body>
     </html>
     '''
@@ -32,8 +38,22 @@ def index(request):
     '''
     return HttpResponse(HTMLTemplate(article))
 
+@csrf_exempt
 def create(request):
-    return HttpResponse('Create')
+    article = f'''
+        <form action="/create/" method="POST"> 
+            <p>
+                <input type="text" name="title" placeholder="title">
+            </p>
+            <p>
+                <textarea name="body" placeholder="body"></textarea>
+            </p>
+            <p>
+                <input type="submit" value="제출">
+            </p>
+        </form>
+    '''
+    return HttpResponse(HTMLTemplate(article))
 
 def read(request, id):
     global topics

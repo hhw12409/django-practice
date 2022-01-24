@@ -7,7 +7,7 @@ topics = [
     {'id':3, 'title':'model', 'body':'Model is ..'},
 ]
 
-def HTMLTemplate():
+def HTMLTemplate(articleTag):
     # topics 전역변수 선언
     global topics
     li = ''
@@ -16,21 +16,29 @@ def HTMLTemplate():
     return f'''
     <html>
     <body>
-        <h1>Django</h1>
+        <h1><a href="/">Django</a></h1>
         <ol>
             {li}
         </ol>
-        <h2>Welcome</h2>
-        Hello, Django
+        {articleTag}
     </body>
     </html>
     '''
 
 def index(request):
-    return HttpResponse(HTMLTemplate())
+    article = '''
+    <h2>Welcome</h2>
+    Hello, Django
+    '''
+    return HttpResponse(HTMLTemplate(article))
 
 def create(request):
     return HttpResponse('Create')
 
 def read(request, id):
-    return HttpResponse('Read!' + id)
+    global topics
+    article = ''
+    for topic in topics:
+        if topic['id'] == int(id):
+            article = f'<h2>{topic["title"]}</h2>{topic["body"]}'
+    return HttpResponse(HTMLTemplate(article))

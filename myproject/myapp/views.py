@@ -1,3 +1,4 @@
+from glob import glob
 from django.http import HttpResponse
 from django.shortcuts import render,HttpResponse, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -9,9 +10,19 @@ topics = [
     {'id':3, 'title':'model', 'body':'Model is ..'},
 ]
 
-def HTMLTemplate(articleTag):
+def HTMLTemplate(articleTag, id=None):
     # topics 전역변수 선언
     global topics
+    contextUI = ''
+    if id != None:
+        contextUI = f'''
+            <li>
+                <form action="/delete/" method="POST">
+                    <input type="hidden" name="id" value={id}>
+                    <input type="submit" value="delete">
+                </form>
+            </li>
+        '''
     li = ''
     for topic in topics:
         li += f'<li><a href="/read/{topic["id"]}">{topic["title"]}</a></li>'
@@ -27,6 +38,7 @@ def HTMLTemplate(articleTag):
             <li>
                 <a href="/create/">create</a>
             </li>
+            {contextUI}
         </ul>
     </body>
     </html>
@@ -66,10 +78,22 @@ def create(request):
         nextId = nextId + 1 # id값 + 1
         return redirect(url)
 
+@csrf_exempt
+def delete(request):
+    global topics
+    if request.method == "POST":
+        id = request.POST['id']
+        newTopics = []
+        for topic in topics:
+            if topic['id'] != int(id):
+                newTopics.append(topic)
+        topics = newTopics
+        return redirect('/')
+
 def read(request, id):
     global topics
     article = ''
     for topic in topics:
         if topic['id'] == int(id):
             article = f'<h2>{topic["title"]}</h2>{topic["body"]}'
-    return HttpResponse(HTMLTemplate(article))
+    return HttpResponse(HTMLTemplate(article, id))

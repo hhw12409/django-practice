@@ -168,3 +168,6 @@ cython_debug/
 
 .history/
 myvenv/
+강의내용필기/
+secretKey.py
+dbConfig.py
